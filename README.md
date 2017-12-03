@@ -9,3 +9,5 @@
 - [searchcode](https://searchcode.com/?q=copy)
   这个我们可以加进去用
 - [谢涛的个人主页（疑似需翻墙）]( http://taoxie.cs.illinois.edu/software.html )
+- [相关名词.md](https://github.com/KXXH/MSR_project/blob/master/%E7%9B%B8%E5%85%B3%E5%90%8D%E8%AF%8D.md) 
+

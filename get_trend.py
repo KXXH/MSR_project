@@ -1,14 +1,15 @@
 # coding=UTF-8
 '''
-Version=1.1
+Version=1.2
 date=2018-3-16
 TODO:
-- 链接数据库
+- 在线测试
 '''
 from urllib import request
 import re
 import json
 import threading
+import sqlite3
 
 class Project:
 	def __init__(self, name, language = None, stars = None, forks = None, stars_today = None, contributors = None):
@@ -123,6 +124,17 @@ def get_project_list(project_url):
 				print('name: %s' % name)
 				print('nums: %s' % nums)
 				print('cons: %s' % cons)
+				lock.acquire()
+				try:
+					conn1 = sqlite3.connect('hot_project_info.db')
+					cursor1 = conn1.cursor()
+					cursor1.execute('insert into hot_projects(name, language, stars, forks, stars_today, contributors) '\
+						'values(?, ?, ?, ?, ?, ?)', (name, language, nums[0], nums[1], nums[2], list2str(cons)))
+					cursor1.close()
+					conn1.commit()
+					conn1.close()
+				finally:
+					lock.release()
 				project_list.append(t_project)
 			# print(len(m))
 			# print(data)
@@ -132,8 +144,9 @@ def get_project_list(project_url):
 			# print(re.search(bt1,data))
 		# break
 	except Exception as e:
-		get_project_list(project_url)
+		# get_project_list(project_url)
 		print(e)
+	return project_list
 
 
 def str2num(c):
@@ -142,6 +155,15 @@ def str2num(c):
 	for num in nums:
 		s*=1000
 		s+=int(num)
+	return s
+
+def list2str(l):
+	s = ''
+	if len(l)>1:
+		for item in l:
+			s = s + str(item) + '|'
+	elif len(l)>0:
+		s = str(l[0])
 	return s
 
 def test_language_page():
@@ -198,6 +220,13 @@ def test_language_page():
 
 if __name__ == '__main__':
 	# urls = get_language_list()
+	conn = sqlite3.connect('hot_project_info.db')
+	cursor = conn.cursor()
+	cursor.execute('create table if not exists hot_projects (_id integer primary key autoincrement, name text, language text, stars integer, forks integer, stars_today integer, contributors text)')
+	cursor.close()
+	conn.commit()
+	conn.close()
+	lock = threading.Lock()
 	with open('Github_language_url_list.json', 'r') as f:
 		data = f.read()
 		urls = json.loads(data)

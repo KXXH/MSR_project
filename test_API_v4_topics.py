@@ -6,7 +6,7 @@ import json
 data = {
 	"query":'query {repository(name:"PyGithub" owner:"PyGithub"){repositoryTopics(last:20){nodes{topic {name}}}}}'
 }
-headers = {'Authorization': 'token 76acc3f4a484314266f7578e767d0e50e37b0118'}
+headers = {'Authorization': 'token 0db8e6ec963b57f43b01cbef8c1359c4a844eaa0'}
 req = request.Request(url = 'https://api.github.com/graphql', data = json.dumps(data).encode('UTF-8'), headers = headers)
 print(type(json.dumps(data)).encode('UTF-8'))
 resopnse = request.urlopen(req)

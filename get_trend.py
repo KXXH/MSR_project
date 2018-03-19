@@ -1,9 +1,11 @@
 # coding=UTF-8
 '''
-Version=1.2
-date=2018-3-16
+Version=1.3
+date=2018-3-19
 TODO:
 - 在线测试
+- 优化API使用量
+- 网络IO优化
 '''
 from urllib import request
 import re
@@ -124,12 +126,14 @@ def get_project_list(project_url):
 				print('name: %s' % name)
 				print('nums: %s' % nums)
 				print('cons: %s' % cons)
+				topics = get_topics_list(name.split('/')[1], name.split('/')[2])
+				print('topics: %s' % str(topics))
 				lock.acquire()
 				try:
 					conn1 = sqlite3.connect('hot_project_info.db')
 					cursor1 = conn1.cursor()
-					cursor1.execute('insert into hot_projects(name, language, stars, forks, stars_today, contributors) '\
-						'values(?, ?, ?, ?, ?, ?)', (name, language, nums[0], nums[1], nums[2], list2str(cons)))
+					cursor1.execute('insert into hot_projects(name, language, stars, forks, stars_today, contributors, topics) '\
+						'values(?, ?, ?, ?, ?, ?, ?)', (name, language, nums[0], nums[1], nums[2], list2str(cons), list2str(topics)))
 					cursor1.close()
 					conn1.commit()
 					conn1.close()
@@ -144,8 +148,9 @@ def get_project_list(project_url):
 			# print(re.search(bt1,data))
 		# break
 	except Exception as e:
-		get_project_list(project_url)
 		print(e)
+		get_project_list(project_url)
+		
 	return project_list
 
 
@@ -165,6 +170,23 @@ def list2str(l):
 	elif len(l)>0:
 		s = str(l[0])
 	return s
+
+def get_topics_list(owner, name, **kw):
+	token = '0db8e6ec963b57f43b01cbef8c1359c4a844eaa0'
+	if 'token' in kw:
+		token = kw['token']
+	headers = {'Authorization': 'token '+token}
+	data = {
+		'query':'query {repository(name:"%s" owner:"%s"){repositoryTopics(last:20){nodes{topic {name}}}}}' % (name, owner)
+	}
+	req = request.Request(url = 'https://api.github.com/graphql', data = json.dumps(data).encode('UTF-8'), headers = headers)
+	resopnse = request.urlopen(req)
+	ans = resopnse.read().decode('UTF-8')
+	d = json.loads(ans)
+	topic_list = list()
+	for item in d['data']['repository']['repositoryTopics']['nodes']:
+		topic_list.append(item['topic']['name'])
+	return topic_list
 
 def test_language_page():
 	filename='Trending 1C Enterprise repositories on GitHub today.html'
@@ -222,7 +244,8 @@ if __name__ == '__main__':
 	# urls = get_language_list()
 	conn = sqlite3.connect('hot_project_info.db')
 	cursor = conn.cursor()
-	cursor.execute('create table if not exists hot_projects (_id integer primary key autoincrement, name text, language text, stars integer, forks integer, stars_today integer, contributors text)')
+	cursor.execute('drop table if exists hot_projects')
+	cursor.execute('create table if not exists hot_projects (_id integer primary key autoincrement, name text, language text, stars integer, forks integer, stars_today integer, contributors text, topics text)')
 	cursor.close()
 	conn.commit()
 	conn.close()
@@ -230,6 +253,8 @@ if __name__ == '__main__':
 	with open('Github_language_url_list.json', 'r') as f:
 		data = f.read()
 		urls = json.loads(data)
+	print(len(urls))
+
 	for i in range(0, len(urls), 4):
 		t1 = threading.Thread(target = get_project_list, args = (urls[i],))
 		t2 = threading.Thread(target = get_project_list, args = (urls[i+1],))

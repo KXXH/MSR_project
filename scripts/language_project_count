@@ -1,0 +1,63 @@
+# coding=UTF-8
+# TODO:
+# - 改正HTML下属语言表现
+
+from urllib import request
+import json
+import threading
+import sqlite3
+from get_trend import get_language_list
+
+token = 'b2fcb98bcc052cc95c2365a15e968c0b39e84ad2'
+lock = threading.Lock()
+
+def get_language_project_count(language):
+	headers = {'Authorization': 'token '+token}
+	data = {'query':'query {search(query:"language:%s" type:REPOSITORY){repositoryCount}}' % language}
+	req = request.Request(url = 'https://api.github.com/graphql', data = json.dumps(data).encode('UTF-8'), headers = headers)
+	resopnse = request.urlopen(req)
+	ans = resopnse.read().decode('UTF-8')
+	d = json.loads(ans)
+	print(d)
+	lock.acquire()
+	try:
+		conn = sqlite3.connect('language_project_count.db')
+		cursor = conn.cursor()
+		cursor.execute('insert into project_count(language, count) values(?, ?)', (language, d['data']['search']['repositoryCount']))
+		print(language+str(d['data']['search']['repositoryCount']))
+		cursor.close()
+		conn.commit()
+		conn.close()
+	finally:
+		lock.release()
+
+if __name__ == '__main__':
+	get_language_list()
+	conn = sqlite3.connect('language_project_count.db')
+	cursor = conn.cursor()
+	cursor.execute('drop table if exists project_count')
+	cursor.execute('create table if not exists project_count (_id integer primary key autoincrement, language text, count integer)')
+	cursor.close()
+	conn.commit()
+	conn.close()
+	begin = 'https://github.com/trending/'
+	with open('Github_language_url_list.json', 'r') as f:
+		data = f.read()
+		urls = json.loads(data)
+	thread_num = 8
+	print(len(urls))
+	for i in range(0, len(urls), thread_num):
+		Thread_list = list()
+		for j in range(0, thread_num):
+			try:
+				t1 = threading.Thread(target = get_language_project_count, args = (urls[i][len(begin):],))
+			except IndexError:
+				break
+			i=i+1
+			Thread_list.append(t1)
+		for th in Thread_list:
+			th.start()
+		for th in Thread_list:
+			th.join()
+
+	

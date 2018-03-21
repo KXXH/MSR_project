@@ -12,15 +12,17 @@ import re
 import json
 import threading
 import sqlite3
+import logging
 
 class Project:
-	def __init__(self, name, language = None, stars = None, forks = None, stars_today = None, contributors = None):
+	def __init__(self, name, language = None, stars = None, forks = None, stars_today = None, contributors = None, topics = None):
 		self.__name = name
 		self.__language = language
 		self.__stars = stars
 		self.__forks = forks
 		self.__contributors = contributors
 		self.__stars_today = stars_today
+		self.__topics = topics
 
 	def change_name(self, name = None):
 		if name!=None:
@@ -72,12 +74,20 @@ class Project:
 				raise ValueError('Contributors must be list, not %s' % type(contributors))
 		return self.__contributors
 
+	def change_topics(self, topics = None):
+		if topics!=None:
+			if type(topics)==list:
+				self.__topics = topics
+			else:
+				raise ValueError('Topics must be list, not %s' % type(topics))
+		return self.__topics
+
 
 def get_language_list():
 	url = 'https://github.com/trending/'
 	with request.urlopen(url) as trend_page:
 		data = trend_page.read()
-		bt = 'https://github.com/trending/[a-z0-9%-]+'
+		bt = 'https://github.com/trending/[a-z0-9%-+]+'
 		urls = re.findall(bt,str(data))
 		with open('Github_language_url_list.json', 'w') as f:
 			json.dump(urls[10:],f)
@@ -85,7 +95,9 @@ def get_language_list():
 	urls = urls[10:]
 	return urls
 
-def get_project_list(project_url):
+def get_project_list(project_url, token = None):
+	if token == None:
+		token = 'b2fcb98bcc052cc95c2365a15e968c0b39e84ad2'
 	# print(project_url)
 	print('now opening :'+project_url)
 	try:
@@ -126,7 +138,7 @@ def get_project_list(project_url):
 				print('name: %s' % name)
 				print('nums: %s' % nums)
 				print('cons: %s' % cons)
-				topics = get_topics_list(name.split('/')[1], name.split('/')[2])
+				topics = get_topics_list(name.split('/')[1], name.split('/')[2], token = token)
 				print('topics: %s' % str(topics))
 				lock.acquire()
 				try:
@@ -148,11 +160,9 @@ def get_project_list(project_url):
 			# print(re.search(bt1,data))
 		# break
 	except Exception as e:
-		print(e)
+		logging.exception(e)
 		get_project_list(project_url)
-		
 	return project_list
-
 
 def str2num(c):
 	nums = c.split(',')
@@ -183,6 +193,9 @@ def get_topics_list(owner, name, **kw):
 	resopnse = request.urlopen(req)
 	ans = resopnse.read().decode('UTF-8')
 	d = json.loads(ans)
+	if 'errors' in d:
+		raise RuntimeError('API error!')
+		return list()
 	topic_list = list()
 	for item in d['data']['repository']['repositoryTopics']['nodes']:
 		topic_list.append(item['topic']['name'])
@@ -242,6 +255,10 @@ def test_language_page():
 
 if __name__ == '__main__':
 	# urls = get_language_list()
+	logging.basicConfig(level = logging.INFO,
+		datefmt = '%a, %d %b %Y %H:%M:%S',
+		filename = 'get_trend.log',
+		filemode = 'w')
 	conn = sqlite3.connect('hot_project_info.db')
 	cursor = conn.cursor()
 	cursor.execute('drop table if exists hot_projects')
@@ -249,24 +266,35 @@ if __name__ == '__main__':
 	cursor.close()
 	conn.commit()
 	conn.close()
+	token = 'b2fcb98bcc052cc95c2365a15e968c0b39e84ad2'
 	lock = threading.Lock()
-	with open('Github_language_url_list.json', 'r') as f:
-		data = f.read()
-		urls = json.loads(data)
+	thread_num = 8
+	try:
+		with open('Github_language_url_list.json', 'r') as f:
+			data = f.read()
+			urls = json.loads(data)
+	except FileNotFoundError:
+		urls = get_language_list()
 	print(len(urls))
-
-	for i in range(0, len(urls), 4):
-		t1 = threading.Thread(target = get_project_list, args = (urls[i],))
-		t2 = threading.Thread(target = get_project_list, args = (urls[i+1],))
-		t3 = threading.Thread(target = get_project_list, args = (urls[i+2],))
-		t4 = threading.Thread(target = get_project_list, args = (urls[i+3],))
-		t1.start()
-		t2.start()
-		t3.start()
-		t4.start()
-		t1.join()
-		t2.join()
-		t3.join()
-		t4.join()
+	try:
+		headers = {'Authorization': 'token '+token}
+		data = {
+			"query":"query{viewer{login}}"
+		}
+		req = request.Request(url = 'https://api.github.com/graphql', data = json.dumps(data).encode('UTF-8'), headers = headers)
+		resopnse = request.urlopen(req)
+	except:
+		token = str(input('Token 已经失效，请输入新的token：'))
+	
+	for i in range(0, len(urls), thread_num):
+		Thread_list = list()
+		for j in range(0, thread_num):
+			t1 = threading.Thread(target = get_project_list, args = (urls[i],))
+			i=i+1
+			Thread_list.append(t1)
+		for th in Thread_list:
+			th.start()
+		for th in Thread_list:
+			th.join()
 		# get_project_list(project_url)
 	# test_language_page()

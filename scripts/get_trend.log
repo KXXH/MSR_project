@@ -1,0 +1,19 @@
+ERROR:root:HTTP Error 502: Bad Gateway
+Traceback (most recent call last):
+  File "C:\Users\zjm97.DESKTOP-NUUUEH8\OneDrive\ÎÄµµ\GitHub\MSR_project\get_trend.py", line 141, in get_project_list
+    topics = get_topics_list(name.split('/')[1], name.split('/')[2], token = token)
+  File "C:\Users\zjm97.DESKTOP-NUUUEH8\OneDrive\ÎÄµµ\GitHub\MSR_project\get_trend.py", line 193, in get_topics_list
+    resopnse = request.urlopen(req)
+  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 223, in urlopen
+    return opener.open(url, data, timeout)
+  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 532, in open
+    response = meth(req, response)
+  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 642, in http_response
+    'http', request, response, code, msg, hdrs)
+  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 570, in error
+    return self._call_chain(*args)
+  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 504, in _call_chain
+    result = func(*args)
+  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 650, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 502: Bad Gateway

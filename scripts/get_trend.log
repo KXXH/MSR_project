@@ -1,19 +1,27 @@
-ERROR:root:HTTP Error 502: Bad Gateway
-Traceback (most recent call last):
-  File "C:\Users\zjm97.DESKTOP-NUUUEH8\OneDrive\ÎÄµµ\GitHub\MSR_project\get_trend.py", line 141, in get_project_list
-    topics = get_topics_list(name.split('/')[1], name.split('/')[2], token = token)
-  File "C:\Users\zjm97.DESKTOP-NUUUEH8\OneDrive\ÎÄµµ\GitHub\MSR_project\get_trend.py", line 193, in get_topics_list
-    resopnse = request.urlopen(req)
-  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 223, in urlopen
-    return opener.open(url, data, timeout)
-  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 532, in open
-    response = meth(req, response)
-  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 642, in http_response
-    'http', request, response, code, msg, hdrs)
-  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 570, in error
-    return self._call_chain(*args)
-  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 504, in _call_chain
-    result = func(*args)
-  File "C:\Users\zjm97.DESKTOP-NUUUEH8\Anaconda3\lib\urllib\request.py", line 650, in http_error_default
-    raise HTTPError(req.full_url, code, msg, hdrs, fp)
-urllib.error.HTTPError: HTTP Error 502: Bad Gateway
+Sat, 24 Mar 2018 15:25:50 INFO get_trend.py 114 9652 now opening :https://github.com/trending/1c
+Sat, 24 Mar 2018 15:25:50 INFO get_trend.py 114 9652 now opening :https://github.com/trending/abap
+Sat, 24 Mar 2018 15:25:50 INFO get_trend.py 114 9652 now opening :https://github.com/trending/abnf
+Sat, 24 Mar 2018 15:25:50 INFO get_trend.py 114 9652 now opening :https://github.com/trending/actionscript
+Sat, 24 Mar 2018 15:25:50 INFO get_trend.py 114 9652 now opening :https://github.com/trending/ada
+Sat, 24 Mar 2018 15:25:50 INFO get_trend.py 114 9652 now opening :https://github.com/trending/adobe
+Sat, 24 Mar 2018 15:25:50 INFO get_trend.py 114 9652 now opening :https://github.com/trending/agda
+Sat, 24 Mar 2018 15:25:50 INFO get_trend.py 114 9652 now opening :https://github.com/trending/ags
+Sat, 24 Mar 2018 15:25:59 INFO get_trend.py 159 9652 name: /open-source-flash/open-source-flash, now preparing to get topics.Current language: actionscript
+Sat, 24 Mar 2018 15:26:00 INFO get_trend.py 159 9652 name: /claudiodangelis/qr-filetransfer, now preparing to get topics.Current language: adobe
+Sat, 24 Mar 2018 15:26:01 INFO get_trend.py 161 9652 /claudiodangelis/qr-filetransfer project get topic done!
+Sat, 24 Mar 2018 15:26:01 INFO get_trend.py 159 9652 name: /appbaseio/dejavu, now preparing to get topics.Current language: adobe
+Sat, 24 Mar 2018 15:26:01 INFO get_trend.py 159 9652 name: /claudiodangelis/qr-filetransfer, now preparing to get topics.Current language: 1c
+Sat, 24 Mar 2018 15:26:02 INFO get_trend.py 161 9652 /appbaseio/dejavu project get topic done!
+Sat, 24 Mar 2018 15:26:02 INFO get_trend.py 161 9652 /open-source-flash/open-source-flash project get topic done!
+Sat, 24 Mar 2018 15:26:02 INFO get_trend.py 159 9652 name: /1c7/chinese-independent-developer, now preparing to get topics.Current language: adobe
+Sat, 24 Mar 2018 15:26:02 INFO get_trend.py 159 9652 name: /Gamua/Starling-Framework, now preparing to get topics.Current language: actionscript
+Sat, 24 Mar 2018 15:26:02 INFO get_trend.py 161 9652 /claudiodangelis/qr-filetransfer project get topic done!
+Sat, 24 Mar 2018 15:26:03 INFO get_trend.py 159 9652 name: /appbaseio/dejavu, now preparing to get topics.Current language: 1c
+Sat, 24 Mar 2018 15:26:03 INFO get_trend.py 161 9652 /1c7/chinese-independent-developer project get topic done!
+Sat, 24 Mar 2018 15:26:03 INFO get_trend.py 159 9652 name: /oclif/oclif, now preparing to get topics.Current language: adobe
+Sat, 24 Mar 2018 15:26:03 INFO get_trend.py 161 9652 /Gamua/Starling-Framework project get topic done!
+Sat, 24 Mar 2018 15:26:04 INFO get_trend.py 159 9652 name: /jhuckaby/webcamjs, now preparing to get topics.Current language: actionscript
+Sat, 24 Mar 2018 15:26:04 INFO get_trend.py 161 9652 /appbaseio/dejavu project get topic done!
+Sat, 24 Mar 2018 15:26:04 INFO get_trend.py 159 9652 name: /1c7/chinese-independent-developer, now preparing to get topics.Current language: 1c
+Sat, 24 Mar 2018 15:26:05 INFO get_trend.py 161 9652 /oclif/oclif project get topic done!
+Sat, 24 Mar 2018 15:26:05 INFO get_trend.py 159 9652 name: /d3/d3, now preparing to get topics.Current language: adobe

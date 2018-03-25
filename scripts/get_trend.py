@@ -133,7 +133,8 @@ def get_project_list(project_url, token=None):
                     name = re.findall(bt1, item)[0]
                     name = re.sub('<a href="', '', name)
                 except IndexError:
-                    raise IndexError('list index out of range, HTML: %s' % item)
+                    raise IndexError(
+                        'list index out of range, HTML: %s' % item)
                 nums = re.findall(bt2, item)
                 if len(nums) < 3:
                     # print('缺数字！' + str(len(nums)))
@@ -147,10 +148,11 @@ def get_project_list(project_url, token=None):
                 for i, num in enumerate(nums):
                     nums[i] = str2num(re.sub(r'</svg>\s*', '', num))
                 for i, con in enumerate(cons):
-                    cons[i] = re.sub(r'<img class="avatar mb-1" title="', '', con)
+                    cons[i] = re.sub(
+                        r'<img class="avatar mb-1" title="', '', con)
                 try:
-                    t_project = Project(name, language, nums[0], \
-                    nums[1], nums[2], cons)
+                    t_project = Project(name, language, nums[0],
+                                        nums[1], nums[2], cons)
                 except IndexError as e:
                     logging.debug('nums: %s' % str(nums))
                     logging.exception(e)
@@ -160,8 +162,8 @@ def get_project_list(project_url, token=None):
                 print('cons: %s' % cons)
                 logging.info('name: %s, now preparing to get topics.\
                 Current language: %s' % (name, language))
-                topics = get_topics_list(name.split('/')[1], name.split('/')[2], \
-                token=token)
+                topics = get_topics_list(name.split('/')[1], name.split('/')[2],
+                                         token=token)
                 logging.info('%s project get topic done!' % name)
                 print('topics: %s' % str(topics))
                 lock.acquire()
@@ -170,11 +172,13 @@ def get_project_list(project_url, token=None):
                     cursor1 = conn1.cursor()
                     try:
                         cursor1.execute(
-                            'insert into hot_projects(name, language, stars, forks, stars_today, contributors, topics) ' \
+                            'insert into hot_projects(name, language, stars, forks, stars_today, contributors, topics) '
                             'values(?, ?, ?, ?, ?, ?, ?)',
-                            (name, language, nums[0], nums[1], nums[2], list2str(cons), list2str(topics)))
+                            (name, language, nums[0], nums[1], nums[2],
+                            list2str(cons), list2str(topics)))
                     except sqlite3.IntegrityError:
-                        logging.warning('This primary key has already been used!')
+                        logging.warning(
+                            'This primary key has already been used!')
                         pass
                     finally:
                         cursor1.close()
@@ -187,8 +191,12 @@ def get_project_list(project_url, token=None):
             # print(data)
             for pro in project_list:
                 print('%s %s %s %s %s %s' % (pro.change_name(),
-                                             pro.change_language(), pro.change_stars(), pro.change_forks(),
-                                             pro.change_stars_today(), pro.change_contributors()))
+                                             pro.change_language(),
+                                             pro.change_stars(),
+                                             pro.change_forks(),
+                                             pro.change_stars_today(),
+                                             pro.change_contributors())
+                                             )
             # print(re.search(bt1,data))
         # break
     except Exception as e:
@@ -233,7 +241,8 @@ def get_topics_list(owner, name, **kw):
         'query': 'query {repository(name:"%s" owner:"%s"){repositoryTopics(last:20){nodes{topic {name}}}}}' % (
             name, owner)
     }
-    req = request.Request(url='https://api.github.com/graphql', data=json.dumps(data).encode('UTF-8'), headers=headers)
+    req = request.Request(url='https://api.github.com/graphql',
+                          data=json.dumps(data).encode('UTF-8'), headers=headers)
     try:
         response = request.urlopen(req)
     except Exception as e:
@@ -335,7 +344,8 @@ if __name__ == '__main__':
                 if i >= len(urls):
                     break
                 logging.info('Now is the %dth url' % i)
-                t1 = threading.Thread(target=get_project_list, args=(urls[i], token))
+                t1 = threading.Thread(
+                    target=get_project_list, args=(urls[i], token))
                 i = i + 1
                 Thread_list.append(t1)
             for th in Thread_list:

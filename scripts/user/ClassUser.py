@@ -1,14 +1,16 @@
 
 class User:
-    def __init__(self, contributedRepositories=None, followers=None, following=None, issues=None,
-                 organizations=None, pullRequests=None, repositories=None, starredRepositories=None, watching=None):
+    def __init__(self, contributedRepositories=None, contributedRepositories_url=None, followers=None, following=None, issues=None,
+                 organizations=None, pullRequests=None, repositories=None, repositories_url=None, starredRepositories=None, watching=None):
         self.__contributedRepositories = contributedRepositories
+        self.__contributedRepositories_url = contributedRepositories_url
         self.__followers = followers
         self.__following = following
         self.__issues = issues
         self.__organizations = organizations
         self.__pullRequests = pullRequests
         self.__repositories = repositories
+        self.__repositories_url = repositories_url
         self.__starredRepositories = starredRepositories
         self.__watching = watching
 
@@ -19,6 +21,14 @@ class User:
             else:
                 raise ValueError('Project contributedRepositories must be str, not %s' % type(contributedRepositories))
         return self.__contributedRepositories
+
+    def set_contributedRepositories_url(self, contributedRepositories_url=None):
+        if contributedRepositories_url != None:
+            if type(contributedRepositories_url) == str:
+                self.__contributedRepositories_url = contributedRepositories_url
+            else:
+                raise ValueError('Project contributedRepositories_url must be str, not %s' % type(contributedRepositories_url))
+        return self.__contributedRepositories_url
 
     def set_followers(self, followers=None):
         if followers != None:
@@ -67,6 +77,14 @@ class User:
             else:
                 raise ValueError('Project repositories must be str, not %s' % type(repositories))
         return self.__repositories
+
+    def set_repositories_url(self, repositories_url=None):
+        if repositories_url != None:
+            if type(repositories_url) == str:
+                self.__repositories_url = repositories_url
+            else:
+                raise ValueError('Project repositories_url must be str, not %s' % type(repositories_url))
+        return self.__repositories_url
 
     def set_starredRepositories(self, starredRepositories=None):
         if starredRepositories != None:
